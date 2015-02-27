@@ -1,0 +1,32 @@
+{
+    "name": "cooperaj/bolt-twitter",
+    "description": "Provides access to twitter and gives you the tools to show feeds, searches and hashtags",
+    "type": "bolt-extension",
+    "require": {
+        "bolt/bolt": ">=2.0.0,<3.0.0",
+        "endroid/twitter": "1.1.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adam Cooper", 
+            "email": "adam@networkpie.co.uk"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "init.php"
+        ],
+        "psr-4": {
+            "Bolt\\Extension\\Cooperaj\\BoltTwitter\\": [
+                "",
+                "src"
+            ],
+            "Endroid\\Twitter\\": "lib/endroid/twitter/src",
+            "Buzz\\": "lib/kriswallsmith/buzz/lib"
+        }
+    },
+    "extra": {
+        "bolt-assets": "assets"
+    }
+}

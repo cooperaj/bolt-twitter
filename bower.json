@@ -1,0 +1,17 @@
+{
+  "name": "bolt-twitter",
+  "version": "0.1.0",
+  "authors": [
+    "Adam Cooper <adam@networkpie.co.uk>"
+  ],
+  "dependencies": {
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

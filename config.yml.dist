@@ -1,0 +1,12 @@
+###
+### BoltTwitter
+###
+
+consumer_key:
+consumer_secret:
+access_token:
+access_token_secret:
+
+listings:
+  default:
+  tweets_to_show: 5

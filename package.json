@@ -1,5 +1,5 @@
 {
-    "name": "cooperaj/bolt-twitter",
+    "name": "bolt-twitter",
     "version": "0.1.0",
     "description": "Provides access to twitter and gives you the tools to show feeds, searches and hashtags",
     "scripts": {

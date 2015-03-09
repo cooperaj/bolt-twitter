@@ -34,7 +34,8 @@ class Extension extends BaseExtension
          * Frontend
          */
         if ($this->app['config']->getWhichEnd() == 'frontend') {
-            $this->addCss('assets/css/bolt-twitter.css');
+            // TODO Implement some sort of nice styling for the output
+            //$this->addCss('assets/css/bolt-twitter.css');
 
             // Twig functions
             $this->app['twig']->addExtension(new Twig\BoltTwitterExtension($this->app));
@@ -53,20 +54,22 @@ class Extension extends BaseExtension
     protected function createServiceLayer()
     {
         $this->app[Extension::CONTAINER . '.service'] = function ($c) {
-            $consumer_key = $c[Extension::CONTAINER]->config['consumerKey'];
-            $consumer_secret = $c[Extension::CONTAINER]->config['consumerSecret'];
-            $access_token = $c[Extension::CONTAINER]->config['accessToken'];
-            $access_token_secret = $c[Extension::CONTAINER]->config['accessTokenSecret'];
+            $consumer_key = $c[Extension::CONTAINER]->config['consumer_key'];
+            $consumer_secret = $c[Extension::CONTAINER]->config['consumer_secret'];
+            $access_token = $c[Extension::CONTAINER]->config['access_token'];
+            $access_token_secret = $c[Extension::CONTAINER]->config['access_token_secret'];
 
-            if ($consumer_key === '' || $consumer_secret === '' ||
-                $access_token === '' || $access_token_secret === ''
+            if ($consumer_key === '' || is_null($consumer_key) ||
+                $consumer_secret === '' || is_null($consumer_secret) ||
+                $access_token === '' || is_null($access_token) ||
+                $access_token_secret === '' || is_null($access_token_secret)
             ) {
                 throw new InvalidConfigurationException(
                     'Necessary Twitter API key/token values not specified or are incorrect.'
                 );
             }
 
-            return new Twitter($consumer_key, $consumer_secret, $access_token, $access_token_secret, $apiUrl = null);
+            return new Twitter($c, $consumer_key, $consumer_secret, $access_token, $access_token_secret, $apiUrl = null);
         };
     }
 

@@ -32,7 +32,7 @@ class Twitter
         $access_token_secret,
         $apiUrl = null
     ) {
-        $this->cache = new ResilientCache($app['cache']);
+        $this->cache = new ResilienceCache($app['cache']);
 
         $this->twitter_service = new ETwitter(
             $consumer_key,

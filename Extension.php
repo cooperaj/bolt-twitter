@@ -35,7 +35,7 @@ class Extension extends BaseExtension
          */
         if ($this->app['config']->getWhichEnd() == 'frontend') {
             // TODO Implement some sort of nice styling for the output
-            //$this->addCss('assets/css/bolt-twitter.css');
+            //$this->addCss('assets/css/twitter.css');
 
             // Twig functions
             $this->app['twig']->addExtension(new Twig\TwitterExtension($this->app));

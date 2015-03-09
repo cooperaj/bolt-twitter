@@ -4,7 +4,7 @@ namespace Bolt\Extension\Cooperaj\Twitter;
 
 use Doctrine\Common\Cache\Cache;
 
-class ResilientCache implements Cache
+class ResilienceCache implements Cache
 {
     /**
      * @var Cache
@@ -75,10 +75,10 @@ class ResilientCache implements Cache
     /**
      * Puts data into the cache.
      *
-     * @param string $id The cache id.
-     * @param mixed $data The cache entry/data.
+     * @param string $id    The cache id.
+     * @param mixed $data   The cache entry/data.
      * @param int $lifeTime The cache lifetime.
-     *                         If != 0, sets a specific lifetime for this cache entry (0 => infinite lifeTime).
+     *                      If != 0, sets a specific lifetime for this cache entry (0 => infinite lifeTime).
      *
      * @return boolean TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */

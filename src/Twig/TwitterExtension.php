@@ -23,12 +23,18 @@ class TwitterExtension extends \Twig_Extension
      */
     private $twig = null;
 
+    /**
+     * @param Application $app
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
         $this->config = $this->app[Extension::CONTAINER]->config;
     }
 
+    /**
+     * @param \Twig_Environment $environment
+     */
     public function initRuntime(\Twig_Environment $environment)
     {
         $this->twig = $environment;
@@ -39,7 +45,7 @@ class TwitterExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'bolttwitter.extension';
+        return 'twitter.extension';
     }
 
     /**
@@ -64,6 +70,12 @@ class TwitterExtension extends \Twig_Extension
         );
     }
 
+    /**
+     * Renders a tweet timeline using the configured details
+     *
+     * @param string $listing
+     * @return \Twig_Markup
+     */
     public function twigTimelineDisplay($listing = 'default')
     {
         $listing_config = $this->config['listings'][$listing];
@@ -102,7 +114,7 @@ class TwitterExtension extends \Twig_Extension
     /**
      * Filter function to parse tweet text into tweet text with entity links.
      *
-     * @param $tweet A Twitter API tweet object
+     * @param \stdClass $tweet A Twitter API tweet object
      * @return \Twig_Markup The correct tweet text for display.
      */
     public function twigAddTweetEntityLinks($tweet)
@@ -110,16 +122,28 @@ class TwitterExtension extends \Twig_Extension
         return new \Twig_Markup(trim($this->addTweetEntityLinks($tweet)), 'UTF-8');
     }
 
+    /**
+     * @param \stdClass $user A Twitter API user object
+     * @return \Twig_Markup
+     */
     public function twigLinkUser($user)
     {
         return new \Twig_Markup(trim($this->linkUser($user)), 'UTF-8');
     }
 
+    /**
+     * @param \stdClass $tweet A Twitter API tweet object
+     * @return \Twig_Markup
+     */
     public function twigLinkTweet($tweet)
     {
         return new \Twig_Markup(trim($this->linkTweet($tweet)), 'UTF-8');
     }
 
+    /**
+     * @param $errors
+     * @return \Twig_Markup
+     */
     protected function errorEncountered($errors)
     {
         $error_html = $this->app['render']->render('bolttwitter_error.twig', array('errors' => $errors));
@@ -131,6 +155,9 @@ class TwitterExtension extends \Twig_Extension
      * Parses a twitter API tweet object and generate the correctly linked text for display.
      *
      * http://stackoverflow.com/a/15390225
+     *
+     * @param \stdClass $tweet A Twitter API tweet object
+     * @return string
      */
     protected function addTweetEntityLinks($tweet)
     {
@@ -180,7 +207,9 @@ class TwitterExtension extends \Twig_Extension
     }
 
     /**
-     * @param $user \stdClass Turns a twitter API user into a url for that user.
+     * Turns a twitter API user into a url for that user.
+     *
+     * @param \stdClass $user A Twitter API user object
      * @return string
      */
     protected function linkUser($user)
@@ -189,7 +218,9 @@ class TwitterExtension extends \Twig_Extension
     }
 
     /**
-     * @param $tweet \stdClass Turns a twitter API tweet into a url for that tweet.
+     * Turns a twitter API tweet into a url for that tweet.
+     *
+     * @param \stdClass $tweet A Twitter API tweet object
      * @return string
      */
     protected function linkTweet($tweet)
@@ -197,11 +228,19 @@ class TwitterExtension extends \Twig_Extension
         return $this->linkUser($tweet->user) . '/status/' . $tweet->id_str;
     }
 
+    /**
+     * @param \stdClass $tweet A Twitter API tweet object
+     * @return string
+     */
     protected function linkRetweet($tweet)
     {
         return 'https://twitter.com/intent/retweet?tweet_id=' . $tweet->id_str;
     }
 
+    /**
+     * @param \stdClass $tweet A Twitter API tweet object
+     * @return string
+     */
     protected function linkAddTweetToFavorites($tweet)
     {
         return 'https://twitter.com/intent/favorite?tweet_id=' . $tweet->id_str;

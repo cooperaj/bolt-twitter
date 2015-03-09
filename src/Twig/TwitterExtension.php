@@ -105,7 +105,7 @@ class TwitterExtension extends \Twig_Extension
                 $tweet->retweeted_by = $retweeted_by;
             }
 
-            $timeline_html .= $this->app['render']->render('bolttwitter_tweet.twig', array('tweet' => $tweet));
+            $timeline_html .= $this->app['render']->render('twitter_tweet.twig', array('tweet' => $tweet));
         }
 
         return new \Twig_Markup($timeline_html, 'UTF-8');
@@ -146,7 +146,7 @@ class TwitterExtension extends \Twig_Extension
      */
     protected function errorEncountered($errors)
     {
-        $error_html = $this->app['render']->render('bolttwitter_error.twig', array('errors' => $errors));
+        $error_html = $this->app['render']->render('twitter_error.twig', array('errors' => $errors));
 
         return new \Twig_Markup($error_html, 'UTF-8');
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bolt\Extension\Cooperaj\BoltTwitter;
+namespace Bolt\Extension\Cooperaj\Twitter;
 
 use Bolt\Application;
 use Buzz\Exception\RequestException;

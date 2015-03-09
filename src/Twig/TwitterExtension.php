@@ -1,12 +1,12 @@
 <?php
 
-namespace Bolt\Extension\Cooperaj\BoltTwitter\Twig;
+namespace Bolt\Extension\Cooperaj\Twitter\Twig;
 
 use Bolt\Application;
-use Bolt\Extension\Cooperaj\BoltTwitter\Extension;
-use Bolt\Extension\Cooperaj\BoltTwitter\Twitter;
+use Bolt\Extension\Cooperaj\Twitter\Extension;
+use Bolt\Extension\Cooperaj\Twitter\Twitter;
 
-class BoltTwitterExtension extends \Twig_Extension
+class TwitterExtension extends \Twig_Extension
 {
     /**
      * @var Application

@@ -4,7 +4,7 @@ var gulp = require('gulp'),
 
 var src = {
     js: 'src/js/**/*.js',
-    scss: 'src/scss/**/*.scss',
+    scss: 'src/scss/**/*.scss'
 }
 
 gulp.task('sass', function() {

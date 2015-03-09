@@ -1,6 +1,6 @@
 <?php
 
-namespace Bolt\Extension\Cooperaj\BoltTwitter;
+namespace Bolt\Extension\Cooperaj\Twitter;
 
 use Bolt\BaseExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -12,14 +12,14 @@ class Extension extends BaseExtension
      *
      * @var string
      */
-    const NAME = "BoltTwitter";
+    const NAME = "Twitter";
 
     /**
      * Extension's service container
      *
      * @var string
      */
-    const CONTAINER = 'extensions.BoltTwitter';
+    const CONTAINER = 'extensions.Twitter';
 
     public function getName()
     {
@@ -38,7 +38,7 @@ class Extension extends BaseExtension
             //$this->addCss('assets/css/bolt-twitter.css');
 
             // Twig functions
-            $this->app['twig']->addExtension(new Twig\BoltTwitterExtension($this->app));
+            $this->app['twig']->addExtension(new Twig\TwitterExtension($this->app));
 
             // Add twig templates
             $this->app['twig.loader.filesystem']->prependPath(__DIR__ . "/assets/twig");

@@ -9,4 +9,4 @@ access_token_secret:
 
 listings:
   default:
-  tweets_to_show: 5
+    tweets_to_show: 5

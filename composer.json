@@ -2,6 +2,10 @@
     "name": "cooperaj/bolt-twitter",
     "description": "Provides access to twitter and gives you the tools to show feeds, searches and hashtags",
     "type": "bolt-extension",
+    "keywords" : [
+        "twitter",
+        "social media"
+    ],
     "require": {
         "bolt/bolt": ">=2.0.0,<3.0.0"
     },

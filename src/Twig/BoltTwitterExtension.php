@@ -64,13 +64,14 @@ class BoltTwitterExtension extends \Twig_Extension
         if (isset($tweets->errors) &&  ! is_null($tweets->errors))
             return $this->errorEncountered($tweets->errors);
 
-        $timeline_html = $this->app['render']->render('timeline_listing.twig', array('tweets' => $tweets));
+            $timeline_html .= $this->app['render']->render('bolttwitter_tweet.twig', array('tweet' => $tweet));
 
         return new \Twig_Markup($timeline_html, 'UTF-8');
     }
 
-    protected function errorEncountered($errors) {
-        $error_html = $this->app['render']->render('error.twig', array('errors' => $errors));
+    protected function errorEncountered($errors)
+    {
+        $error_html = $this->app['render']->render('bolttwitter_error.twig', array('errors' => $errors));
 
         return new \Twig_Markup($error_html, 'UTF-8');
     }

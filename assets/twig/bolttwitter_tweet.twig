@@ -1,0 +1,14 @@
+<div class="tweet">
+    <a href="{{ tweet.user|tweet_user_link }}"><img src="{{ tweet.user.profile_image_url }}" class="avatar" /></a>
+    <h3>
+        <a href="{{ tweet.user|tweet_user_link }}">{{ tweet.user.name }}</a>
+        {% if tweet.retweeted_by %}
+            <small>retweeted by <a href="{{ tweet.retweeted_by|tweet_user_link }}">{{ tweet.retweeted_by.name }}</a></small>
+        {% endif %}
+    </h3>
+    <span class="userdate">
+        <a href="{{ tweet.user|tweet_user_link }}">@{{ tweet.user.screen_name }}</a> -
+        <span class="date"><a href="{{ tweet|tweet_status_link }}">{{ tweet.created_at|date('jS F') }}</a></span>
+    </span>
+    <div class="detail">{{ tweet|tweet_entityfy }}</div>
+</div>

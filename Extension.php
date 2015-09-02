@@ -41,7 +41,7 @@ class Extension extends BaseExtension
             $this->app['twig']->addExtension(new Twig\TwitterExtension($this->app));
 
             // Add twig templates
-            $this->app['twig.loader.filesystem']->prependPath(__DIR__ . "/assets/twig");
+            $this->app['twig.loader.filesystem']->addPath(__DIR__ . "/assets/twig");
 
 
         }

@@ -3,15 +3,16 @@
 namespace Bolt\Extension\Cooperaj\Twitter\Twig;
 
 use Bolt\Application;
-use Bolt\Extension\Cooperaj\Twitter\Extension;
+use Bolt\Extension\Cooperaj\Twitter\TwitterExtension as Extension;
 use Bolt\Extension\Cooperaj\Twitter\Twitter;
+use Pimple;
 
 class TwitterExtension extends \Twig_Extension
 {
     /**
      * @var Application
      */
-    private $app;
+    private $container;
 
     /**
      * @var array
@@ -26,10 +27,10 @@ class TwitterExtension extends \Twig_Extension
     /**
      * @param Application $app
      */
-    public function __construct(Application $app)
+    public function __construct(Pimple $container, $config)
     {
-        $this->app = $app;
-        $this->config = $this->app[Extension::CONTAINER]->config;
+        $this->container = $container;
+        $this->config = $config;
     }
 
     /**
@@ -86,7 +87,7 @@ class TwitterExtension extends \Twig_Extension
         }
 
         /** @var Twitter $twitter */
-        $twitter = $this->app[Extension::CONTAINER . '.service'];
+        $twitter = $this->container[Extension::CONTAINER . '.service'];
 
         $tweets = $twitter->getUserTimeline($user, $listing_config['tweets_to_show']);
 
@@ -105,7 +106,7 @@ class TwitterExtension extends \Twig_Extension
                 $tweet->retweeted_by = $retweeted_by;
             }
 
-            $timeline_html .= $this->app['render']->render('twitter_tweet.twig', array('tweet' => $tweet));
+            $timeline_html .= $this->container['render']->render('twitter_tweet.twig', array('tweet' => $tweet));
         }
 
         return new \Twig_Markup($timeline_html, 'UTF-8');
@@ -146,7 +147,7 @@ class TwitterExtension extends \Twig_Extension
      */
     protected function errorEncountered($errors)
     {
-        $error_html = $this->app['render']->render('twitter_error.twig', array('errors' => $errors));
+        $error_html = $this->container['render']->render('twitter_error.twig', array('errors' => $errors));
 
         return new \Twig_Markup($error_html, 'UTF-8');
     }

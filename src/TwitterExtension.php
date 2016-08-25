@@ -2,18 +2,11 @@
 
 namespace Bolt\Extension\Cooperaj\Twitter;
 
-use Bolt\BaseExtension;
+use Bolt\Extension\SimpleExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
-class Extension extends BaseExtension
+class TwitterExtension extends SimpleExtension
 {
-    /**
-     * Extension name
-     *
-     * @var string
-     */
-    const NAME = "Twitter";
-
     /**
      * Extension's service container
      *
@@ -21,30 +14,23 @@ class Extension extends BaseExtension
      */
     const CONTAINER = 'extensions.Twitter';
 
-    public function getName()
-    {
-        return Extension::NAME;
-    }
-
     public function initialize()
     {
+        $app = $this->getContainer();
         $this->createServiceLayer();
 
-        /*
-         * Frontend
-         */
-        if ($this->app['config']->getWhichEnd() == 'frontend') {
-            // TODO Implement some sort of nice styling for the output
-            //$this->addCss('assets/css/twitter.css');
+        $app['twig'] = $app->share(
+          $app->extend(
+            'twig',
+            function ($twig) use ($app) {
+                $twig->addExtension(new Twig\TwitterExtension($app, $this->getConfig()));
+                
+                return $twig;
+            }
+          )
+        );
 
-            // Twig functions
-            $this->app['twig']->addExtension(new Twig\TwitterExtension($this->app));
-
-            // Add twig templates
-            $this->app['twig.loader.filesystem']->addPath(__DIR__ . "/assets/twig");
-
-
-        }
+        $app['twig.loader.bolt_filesystem']->addDir(__DIR__ . "/assets/twig");
     }
 
     /**
@@ -53,11 +39,14 @@ class Extension extends BaseExtension
      */
     protected function createServiceLayer()
     {
-        $this->app[Extension::CONTAINER . '.service'] = function ($c) {
-            $consumer_key = $c[Extension::CONTAINER]->config['consumer_key'];
-            $consumer_secret = $c[Extension::CONTAINER]->config['consumer_secret'];
-            $access_token = $c[Extension::CONTAINER]->config['access_token'];
-            $access_token_secret = $c[Extension::CONTAINER]->config['access_token_secret'];
+        $app = $this->getContainer();
+        $config = $this->getConfig();
+
+        $app[self::CONTAINER . '.service'] = function ($c) use ($config) {
+            $consumer_key = $config['consumer_key'];
+            $consumer_secret = $config['consumer_secret'];
+            $access_token = $config['access_token'];
+            $access_token_secret = $config['access_token_secret'];
 
             if ($consumer_key === '' || is_null($consumer_key) ||
                 $consumer_secret === '' || is_null($consumer_secret) ||

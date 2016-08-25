@@ -7,7 +7,7 @@
         "social media"
     ],
     "require": {
-        "bolt/bolt": ">=2.0.0,<3.0.0"
+        "bolt/bolt": "^3.0"
     },
     "license": "MIT",
     "authors": [
@@ -16,23 +16,15 @@
             "email": "adam@networkpie.co.uk"
         }
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
-        "files": [
-            "init.php"
-        ],
         "psr-4": {
-            "Bolt\\Extension\\Cooperaj\\Twitter\\": [
-                "",
-                "src"
-            ],
-            "Endroid\\Twitter\\": "lib/endroid/twitter/src/Endroid/Twitter",
-            "Buzz\\": "lib/kriswallsmith/buzz/lib/Buzz"
+            "Bolt\\Extension\\Cooperaj\\Twitter\\": "src"
         }
     },
     "extra": {
         "bolt-assets": "assets",
-        "branch-alias" : {
-            "dev-master" : "1.0.*-dev"
-        }
+        "bolt-class": "Bolt\\Extension\\Cooperaj\\Twitter\\TwitterExtension"
     }
 }

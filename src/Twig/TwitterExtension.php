@@ -2,7 +2,6 @@
 
 namespace Bolt\Extension\Cooperaj\Twitter\Twig;
 
-use Bolt\Application;
 use Bolt\Extension\Cooperaj\Twitter\TwitterExtension as Extension;
 use Bolt\Extension\Cooperaj\Twitter\Twitter;
 use Pimple;
@@ -10,7 +9,7 @@ use Pimple;
 class TwitterExtension extends \Twig_Extension
 {
     /**
-     * @var Application
+     * @var Pimple
      */
     private $container;
 
@@ -25,7 +24,9 @@ class TwitterExtension extends \Twig_Extension
     private $twig = null;
 
     /**
-     * @param Application $app
+     * @param Pimple $container
+     * @param $config
+     * @internal param Pimple $app
      */
     public function __construct(Pimple $container, $config)
     {

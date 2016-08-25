@@ -2,10 +2,9 @@
 
 namespace Bolt\Extension\Cooperaj\Twitter;
 
-use Bolt\Application;
-use Buzz\Exception\RequestException;
 use Doctrine\Common\Cache\Cache;
 use Endroid\Twitter\Twitter as ETwitter;
+use Pimple;
 
 class Twitter
 {
@@ -17,7 +16,7 @@ class Twitter
     /**
      * Class constructor
      *
-     * @param Application $app
+     * @param Pimple $app
      * @param $consumer_key
      * @param $consumer_secret
      * @param $access_token
@@ -25,7 +24,7 @@ class Twitter
      * @param null $apiUrl
      */
     public function __construct(
-        Application $app,
+        Pimple $app,
         $consumer_key,
         $consumer_secret,
         $access_token,

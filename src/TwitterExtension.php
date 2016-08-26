@@ -3,7 +3,6 @@
 namespace Bolt\Extension\Cooperaj\Twitter;
 
 use Bolt\Extension\SimpleExtension;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class TwitterExtension extends SimpleExtension
 {
@@ -12,54 +11,52 @@ class TwitterExtension extends SimpleExtension
      *
      * @var string
      */
-    const CONTAINER = 'extensions.Twitter';
+    const CONTAINER = 'extensions.twitter';
 
-    public function initialize()
+    /**
+     * {@inheritdoc}
+     */
+    public function getServiceProviders()
+    {
+        return [
+            $this,
+            new Provider\TwitterProvider()
+        ];
+    }
+
+    protected function registerTwigPaths()
+    {
+        return [
+            "templates"
+        ];
+    }
+
+    protected function registerTwigFunctions()
     {
         $app = $this->getContainer();
-        $this->createServiceLayer();
 
-        $app['twig'] = $app->share(
-          $app->extend(
-            'twig',
-            function ($twig) use ($app) {
-                $twig->addExtension(new Twig\TwitterExtension($app, $this->getConfig()));
-                
-                return $twig;
-            }
-          )
-        );
+        return [
+            'twitter_timeline', [[$app['extensions.twitter.twig'], 'twigTimelineDisplay'], []]
+        ];
+    }
 
-        $app['twig.loader.bolt_filesystem']->addDir(__DIR__ . "/assets/twig");
+    protected function registerTwigFilters()
+    {
+        $app = $this->getContainer();
+
+        return [
+            'tweet_entityfy', [[$app['extensions.twitter.twig'], 'twigAddTweetEntityLinks'], []],
+            'tweet_user_link', [[$app['extensions.twitter.twig'], 'twigLinkUser'], []],
+            'tweet_status_link', [[$app['extensions.twitter.twig'], 'twigLinkTweet'], []]
+        ];
     }
 
     /**
-     * Adds a service definition to the application container so that we can retrieve an
-     * instance of the service from elsewhere within the code.
+     * {@inheritdoc}
      */
-    protected function createServiceLayer()
+    public function getConfig()
     {
-        $app = $this->getContainer();
-        $config = $this->getConfig();
-
-        $app[self::CONTAINER . '.service'] = function ($c) use ($config) {
-            $consumer_key = $config['consumer_key'];
-            $consumer_secret = $config['consumer_secret'];
-            $access_token = $config['access_token'];
-            $access_token_secret = $config['access_token_secret'];
-
-            if ($consumer_key === '' || is_null($consumer_key) ||
-                $consumer_secret === '' || is_null($consumer_secret) ||
-                $access_token === '' || is_null($access_token) ||
-                $access_token_secret === '' || is_null($access_token_secret)
-            ) {
-                throw new InvalidConfigurationException(
-                    'Necessary Twitter API key/token values not specified or are incorrect.'
-                );
-            }
-
-            return new Twitter($c, $consumer_key, $consumer_secret, $access_token, $access_token_secret, $apiUrl = null);
-        };
+        return parent::getConfig();
     }
 
     /**
@@ -69,17 +66,17 @@ class TwitterExtension extends SimpleExtension
      */
     protected function getDefaultConfig()
     {
-        return array(
+        return [
             'consumer_key' => '',
             'consumer_secret' => '',
             'access_token' => '',
             'access_token_secret' => '',
-            'listings' => array(
-                'default' => array(
+            'listings' => [
+                'default' => [
                     'tweets_to_show' => 5
-                )
-            )
-        );
+                ]
+            ]
+        ];
     }
 }
 

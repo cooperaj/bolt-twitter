@@ -2,14 +2,14 @@
 
 namespace Bolt\Extension\Cooperaj\Twitter\Twig;
 
+use Silex\Application;
 use Bolt\Extension\Cooperaj\Twitter\TwitterExtension as Extension;
 use Bolt\Extension\Cooperaj\Twitter\Twitter;
-use Pimple;
 
-class TwitterExtension extends \Twig_Extension
+class TwitterExtension
 {
     /**
-     * @var Pimple
+     * @var Application
      */
     private $container;
 
@@ -19,57 +19,14 @@ class TwitterExtension extends \Twig_Extension
     private $config;
 
     /**
-     * @var \Twig_Environment
-     */
-    private $twig = null;
-
-    /**
-     * @param Pimple $container
+     * @param Application $container
      * @param $config
      * @internal param Pimple $app
      */
-    public function __construct(Pimple $container, $config)
+    public function __construct(Application $container, $config)
     {
         $this->container = $container;
         $this->config = $config;
-    }
-
-    /**
-     * @param \Twig_Environment $environment
-     */
-    public function initRuntime(\Twig_Environment $environment)
-    {
-        $this->twig = $environment;
-    }
-
-    /**
-     * Return the name of the extension
-     */
-    public function getName()
-    {
-        return 'twitter.extension';
-    }
-
-    /**
-     * @return array An array of Twig_SimpleFunction objects for twig to use.
-     */
-    public function getFunctions()
-    {
-        return array(
-            new \Twig_SimpleFunction('twitter_timeline', array($this, 'twigTimelineDisplay'))
-        );
-    }
-
-    /**
-     * @return array An array of Twig_SimpleFilter objects for twig to use.
-     */
-    public function getFilters()
-    {
-        return array(
-            new \Twig_SimpleFilter('tweet_entityfy', array($this, 'twigAddTweetEntityLinks')),
-            new \Twig_SimpleFilter('tweet_user_link', array($this, 'twigLinkUser')),
-            new \Twig_SimpleFilter('tweet_status_link', array($this, 'twigLinkTweet'))
-        );
     }
 
     /**

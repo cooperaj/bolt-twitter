@@ -36,7 +36,7 @@ class TwitterExtension extends SimpleExtension
         $app = $this->getContainer();
 
         return [
-            'twitter_timeline', [[$app['extensions.twitter.twig'], 'twigTimelineDisplay'], []]
+            'twitter_timeline' => [[$app['extensions.twitter.twig'], 'twigTimelineDisplay'], []]
         ];
     }
 
@@ -45,9 +45,9 @@ class TwitterExtension extends SimpleExtension
         $app = $this->getContainer();
 
         return [
-            'tweet_entityfy', [[$app['extensions.twitter.twig'], 'twigAddTweetEntityLinks'], []],
-            'tweet_user_link', [[$app['extensions.twitter.twig'], 'twigLinkUser'], []],
-            'tweet_status_link', [[$app['extensions.twitter.twig'], 'twigLinkTweet'], []]
+            'tweet_entityfy' => [[$app['extensions.twitter.twig'], 'twigAddTweetEntityLinks'], []],
+            'tweet_user_link' => [[$app['extensions.twitter.twig'], 'twigLinkUser'], []],
+            'tweet_status_link' => [[$app['extensions.twitter.twig'], 'twigLinkTweet'], []]
         ];
     }
 

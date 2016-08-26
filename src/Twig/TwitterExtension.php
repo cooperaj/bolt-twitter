@@ -4,10 +4,12 @@ namespace Bolt\Extension\Cooperaj\Twitter\Twig;
 
 use Silex\Application;
 use Bolt\Extension\Cooperaj\Twitter\TwitterExtension as Extension;
-use Bolt\Extension\Cooperaj\Twitter\Twitter;
+use Bolt\Extension\Cooperaj\Twitter\Service\TwitterService;
 
 class TwitterExtension
 {
+    const TWITTER_URI = 'https://twitter.com';
+
     /**
      * @var Application
      */
@@ -44,7 +46,7 @@ class TwitterExtension
             $user = $listing_config['user'];
         }
 
-        /** @var Twitter $twitter */
+        /** @var TwitterService $twitter */
         $twitter = $this->container[Extension::CONTAINER . '.service'];
 
         $tweets = $twitter->getUserTimeline($user, $listing_config['tweets_to_show']);
@@ -127,30 +129,66 @@ class TwitterExtension
         if (isset($entities->hashtags)) {
             foreach ($entities->hashtags as $hashtag) {
                 list ($start, $end) = $hashtag->indices;
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"https://twitter.com/search?q={$hashtag->text}\">#{$hashtag->text}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">#%s</a>',
+                        [
+                            self::TWITTER_URI . '/search?q=' . urlencode($hashtag->text),
+                            htmlentities($hashtag->text)
+                        ]
+                    )
+                );
             }
         }
         if (isset($entities->urls)) {
             foreach ($entities->urls as $url) {
                 list ($start, $end) = $url->indices;
                 // you can also use $url->expanded_url in place of $url->url
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"{$url->url}\">{$url->display_url}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">%s</a>',
+                        [
+                            $url->url,
+                            htmlentities($url->display_url)
+                        ]
+                    )
+                );
             }
         }
         if (isset($entities->user_mentions)) {
             foreach ($entities->user_mentions as $mention) {
                 list ($start, $end) = $mention->indices;
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"https://twitter.com/{$mention->screen_name}\">@{$mention->screen_name}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">@%s</a>',
+                        [
+                            self::TWITTER_URI . '/' . $mention->screen_name,
+                            htmlentities($mention->screen_name)
+                        ]
+                    )
+                );
             }
         }
         if (isset($entities->media)) {
             foreach ($entities->media as $media) {
                 list ($start, $end) = $media->indices;
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"{$media->url}\">{$media->display_url}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">%s</a>',
+                        [
+                            $media->url,
+                            htmlentities($media->display_url)
+                        ]
+                    )
+                );
             }
         }
 
@@ -159,7 +197,7 @@ class TwitterExtension
 
         foreach ($replacements as $replace_data) {
             list ($start, $end, $replace_text) = $replace_data;
-            $text = mb_substr($text, 0, $start, 'UTF-8').$replace_text.mb_substr($text, $end, NULL, 'UTF-8');
+            $text = mb_substr($text, 0, $start, 'UTF-8') . $replace_text . mb_substr($text, $end, null, 'UTF-8');
         }
 
         return $text;
@@ -173,7 +211,7 @@ class TwitterExtension
      */
     protected function linkUser($user)
     {
-        return "https://twitter.com/{$user->screen_name}";
+        return self::TWITTER_URI . '/' . urlencode($user->screen_name);
     }
 
     /**
@@ -193,7 +231,7 @@ class TwitterExtension
      */
     protected function linkRetweet($tweet)
     {
-        return 'https://twitter.com/intent/retweet?tweet_id=' . $tweet->id_str;
+        return self::TWITTER_URI . '/intent/retweet?tweet_id=' . $tweet->id_str;
     }
 
     /**
@@ -202,6 +240,6 @@ class TwitterExtension
      */
     protected function linkAddTweetToFavorites($tweet)
     {
-        return 'https://twitter.com/intent/favorite?tweet_id=' . $tweet->id_str;
+        return self::TWITTER_URI . '/intent/favorite?tweet_id=' . $tweet->id_str;
     }
 }

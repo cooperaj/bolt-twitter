@@ -1,22 +1,25 @@
 <?php
 
-namespace Bolt\Extension\Cooperaj\Twitter;
+namespace Bolt\Extension\Cooperaj\Twitter\Service;
 
-use Doctrine\Common\Cache\Cache;
+use Bolt\Extension\Cooperaj\Twitter\Cache\ResilienceCache;
 use Endroid\Twitter\Twitter as ETwitter;
-use Pimple;
+use Silex\Application;
 
-class Twitter
+class TwitterService
 {
-    /** @var Cache */
+    /**
+     * @var ResilienceCache
+     */
     private $cache;
 
-    private $twitter_service;
+    /**
+     * @var ETwitter
+     */
+    private $lowLevelService;
 
     /**
-     * Class constructor
-     *
-     * @param Pimple $app
+     * @param Application $app
      * @param $consumer_key
      * @param $consumer_secret
      * @param $access_token
@@ -24,7 +27,7 @@ class Twitter
      * @param null $apiUrl
      */
     public function __construct(
-        Pimple $app,
+        Application $app,
         $consumer_key,
         $consumer_secret,
         $access_token,
@@ -32,8 +35,7 @@ class Twitter
         $apiUrl = null
     ) {
         $this->cache = new ResilienceCache($app['cache']);
-
-        $this->twitter_service = new ETwitter(
+        $this->lowLevelService = new ETwitter(
             $consumer_key,
             $consumer_secret,
             $access_token,
@@ -42,17 +44,27 @@ class Twitter
         );
     }
 
+    /**
+     * @param null $user
+     * @param $number_to_show
+     * @return mixed
+     */
     public function getUserTimeline($user = null, $number_to_show)
     {
         $options = array('count' => $number_to_show);
+
         if (!is_null($user)) {
             $options['screen_name'] = $user;
         }
 
-        $twitter_service = $this->twitter_service;
-        $tweets = $this->cache->fetch($user . $number_to_show, function() use ($twitter_service, $options) {
-            return $twitter_service->getTimeline($options);
-        });
+        $twitter_service = $this->lowLevelService;
+
+        $tweets = $this->cache->fetch(
+            $user . $number_to_show,
+            function () use ($twitter_service, $options) {
+                return $twitter_service->getTimeline($options);
+            }
+        );
 
         if ($tweets) {
             $this->cache->save($user . $number_to_show, $tweets, 120);

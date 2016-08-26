@@ -2,7 +2,7 @@
 
 namespace Bolt\Extension\Cooperaj\Twitter\Provider;
 
-use Bolt\Extension\Cooperaj\Twitter\Twitter;
+use Bolt\Extension\Cooperaj\Twitter\Service\TwitterService;
 use Bolt\Extension\Cooperaj\Twitter\TwitterExtension;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
@@ -41,7 +41,14 @@ class TwitterProvider implements ServiceProviderInterface
                     );
                 }
 
-                return new Twitter($app, $consumer_key, $consumer_secret, $access_token, $access_token_secret, $apiUrl = null);
+                return new TwitterService(
+                    $app,
+                    $consumer_key,
+                    $consumer_secret,
+                    $access_token,
+                    $access_token_secret,
+                    $apiUrl = null
+                );
             }
         );
 

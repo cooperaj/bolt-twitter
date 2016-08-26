@@ -1,6 +1,6 @@
 <?php
 
-namespace Bolt\Extension\Cooperaj\Twitter;
+namespace Bolt\Extension\Cooperaj\Twitter\Cache;
 
 use Doctrine\Common\Cache\Cache;
 
@@ -14,7 +14,8 @@ class ResilienceCache implements Cache
     /**
      * @param Cache $cache
      */
-    public function __construct(Cache $cache) {
+    public function __construct(Cache $cache)
+    {
         $this->cache = $cache;
     }
 
@@ -29,8 +30,9 @@ class ResilienceCache implements Cache
      */
     public function fetch($id)
     {
-        if (func_num_args() > 1)
+        if (func_num_args() > 1) {
             $newDataCallable = func_get_arg(1);
+        }
 
         // attempt to fetch out of the underlying cache
         if ($cacheObj = $this->cache->fetch($id)) {
@@ -38,24 +40,32 @@ class ResilienceCache implements Cache
             $expired = $cacheObj->lifeTime < time();
         }
 
-        if ( ! is_null($data) && ! $expired) // we have a valid cache entry
+        if (!is_null($data) && !$expired) // we have a valid cache entry
+        {
             return $data;
+        }
 
         if (is_null($newDataCallable)) // called with just the id. behave as if just a cache.
+        {
             return false;
+        }
 
         if (is_null($data) || is_null($expired) || $expired) { // if we don't have any data or we have expired data
             try {
                 /** @var Callable $newDataCallable */
                 $newData = $newDataCallable();
-            } catch(\Exception $ex) {}
+            } catch (\Exception $ex) {
+            }
         }
 
-        if (is_null($newData) && ! is_null($data)) // if we don't have new data but we have old data
+        if (is_null($newData) && !is_null($data)) // if we don't have new data but we have old data
+        {
             return $data;
+        }
 
-        if ( ! is_null($newData))
-            return $newData; // we have new data. return it.
+        if (!is_null($newData)) {
+            return $newData;
+        } // we have new data. return it.
 
         return false;
     }
@@ -75,8 +85,8 @@ class ResilienceCache implements Cache
     /**
      * Puts data into the cache.
      *
-     * @param string $id    The cache id.
-     * @param mixed $data   The cache entry/data.
+     * @param string $id The cache id.
+     * @param mixed $data The cache entry/data.
      * @param int $lifeTime The cache lifetime.
      *                      If != 0, sets a specific lifetime for this cache entry (0 => infinite lifeTime).
      *

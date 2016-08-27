@@ -2,16 +2,18 @@
 
 namespace Bolt\Extension\Cooperaj\Twitter\Twig;
 
-use Bolt\Application;
-use Bolt\Extension\Cooperaj\Twitter\Extension;
-use Bolt\Extension\Cooperaj\Twitter\Twitter;
+use Silex\Application;
+use Bolt\Extension\Cooperaj\Twitter\TwitterExtension as Extension;
+use Bolt\Extension\Cooperaj\Twitter\Service\TwitterService;
 
-class TwitterExtension extends \Twig_Extension
+class TwitterExtension
 {
+    const TWITTER_URI = 'https://twitter.com';
+
     /**
      * @var Application
      */
-    private $app;
+    private $container;
 
     /**
      * @var array
@@ -19,55 +21,14 @@ class TwitterExtension extends \Twig_Extension
     private $config;
 
     /**
-     * @var \Twig_Environment
+     * @param Application $container
+     * @param $config
+     * @internal param Pimple $app
      */
-    private $twig = null;
-
-    /**
-     * @param Application $app
-     */
-    public function __construct(Application $app)
+    public function __construct(Application $container, $config)
     {
-        $this->app = $app;
-        $this->config = $this->app[Extension::CONTAINER]->config;
-    }
-
-    /**
-     * @param \Twig_Environment $environment
-     */
-    public function initRuntime(\Twig_Environment $environment)
-    {
-        $this->twig = $environment;
-    }
-
-    /**
-     * Return the name of the extension
-     */
-    public function getName()
-    {
-        return 'twitter.extension';
-    }
-
-    /**
-     * @return array An array of Twig_SimpleFunction objects for twig to use.
-     */
-    public function getFunctions()
-    {
-        return array(
-            new \Twig_SimpleFunction('twitter_timeline', array($this, 'twigTimelineDisplay'))
-        );
-    }
-
-    /**
-     * @return array An array of Twig_SimpleFilter objects for twig to use.
-     */
-    public function getFilters()
-    {
-        return array(
-            new \Twig_SimpleFilter('tweet_entityfy', array($this, 'twigAddTweetEntityLinks')),
-            new \Twig_SimpleFilter('tweet_user_link', array($this, 'twigLinkUser')),
-            new \Twig_SimpleFilter('tweet_status_link', array($this, 'twigLinkTweet'))
-        );
+        $this->container = $container;
+        $this->config = $config;
     }
 
     /**
@@ -85,8 +46,8 @@ class TwitterExtension extends \Twig_Extension
             $user = $listing_config['user'];
         }
 
-        /** @var Twitter $twitter */
-        $twitter = $this->app[Extension::CONTAINER . '.service'];
+        /** @var TwitterService $twitter */
+        $twitter = $this->container[Extension::CONTAINER . '.service'];
 
         $tweets = $twitter->getUserTimeline($user, $listing_config['tweets_to_show']);
 
@@ -105,7 +66,7 @@ class TwitterExtension extends \Twig_Extension
                 $tweet->retweeted_by = $retweeted_by;
             }
 
-            $timeline_html .= $this->app['render']->render('twitter_tweet.twig', array('tweet' => $tweet));
+            $timeline_html .= $this->container['render']->render('twitter_tweet.twig', array('tweet' => $tweet));
         }
 
         return new \Twig_Markup($timeline_html, 'UTF-8');
@@ -146,7 +107,7 @@ class TwitterExtension extends \Twig_Extension
      */
     protected function errorEncountered($errors)
     {
-        $error_html = $this->app['render']->render('twitter_error.twig', array('errors' => $errors));
+        $error_html = $this->container['render']->render('twitter_error.twig', array('errors' => $errors));
 
         return new \Twig_Markup($error_html, 'UTF-8');
     }
@@ -168,30 +129,58 @@ class TwitterExtension extends \Twig_Extension
         if (isset($entities->hashtags)) {
             foreach ($entities->hashtags as $hashtag) {
                 list ($start, $end) = $hashtag->indices;
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"https://twitter.com/search?q={$hashtag->text}\">#{$hashtag->text}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">#%s</a>',
+                        self::TWITTER_URI . '/search?q=' . urlencode($hashtag->text),
+                        htmlentities($hashtag->text)
+                    )
+                );
             }
         }
         if (isset($entities->urls)) {
             foreach ($entities->urls as $url) {
                 list ($start, $end) = $url->indices;
                 // you can also use $url->expanded_url in place of $url->url
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"{$url->url}\">{$url->display_url}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">%s</a>',
+                        $url->url,
+                        htmlentities($url->display_url)
+                    )
+                );
             }
         }
         if (isset($entities->user_mentions)) {
             foreach ($entities->user_mentions as $mention) {
                 list ($start, $end) = $mention->indices;
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"https://twitter.com/{$mention->screen_name}\">@{$mention->screen_name}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">@%s</a>',
+                        self::TWITTER_URI . '/' . $mention->screen_name,
+                        htmlentities($mention->screen_name)
+                    )
+                );
             }
         }
         if (isset($entities->media)) {
             foreach ($entities->media as $media) {
                 list ($start, $end) = $media->indices;
-                $replacements[$start] = array($start, $end,
-                    "<a href=\"{$media->url}\">{$media->display_url}</a>");
+                $replacements[$start] = array(
+                    $start,
+                    $end,
+                    sprintf(
+                        '<a href="%s">%s</a>',
+                        $media->url,
+                        htmlentities($media->display_url)
+                    )
+                );
             }
         }
 
@@ -200,7 +189,7 @@ class TwitterExtension extends \Twig_Extension
 
         foreach ($replacements as $replace_data) {
             list ($start, $end, $replace_text) = $replace_data;
-            $text = mb_substr($text, 0, $start, 'UTF-8').$replace_text.mb_substr($text, $end, NULL, 'UTF-8');
+            $text = mb_substr($text, 0, $start, 'UTF-8') . $replace_text . mb_substr($text, $end, null, 'UTF-8');
         }
 
         return $text;
@@ -214,7 +203,7 @@ class TwitterExtension extends \Twig_Extension
      */
     protected function linkUser($user)
     {
-        return "https://twitter.com/{$user->screen_name}";
+        return self::TWITTER_URI . '/' . urlencode($user->screen_name);
     }
 
     /**
@@ -234,7 +223,7 @@ class TwitterExtension extends \Twig_Extension
      */
     protected function linkRetweet($tweet)
     {
-        return 'https://twitter.com/intent/retweet?tweet_id=' . $tweet->id_str;
+        return self::TWITTER_URI . '/intent/retweet?tweet_id=' . $tweet->id_str;
     }
 
     /**
@@ -243,6 +232,6 @@ class TwitterExtension extends \Twig_Extension
      */
     protected function linkAddTweetToFavorites($tweet)
     {
-        return 'https://twitter.com/intent/favorite?tweet_id=' . $tweet->id_str;
+        return self::TWITTER_URI . '/intent/favorite?tweet_id=' . $tweet->id_str;
     }
 }

@@ -134,10 +134,8 @@ class TwitterExtension
                     $end,
                     sprintf(
                         '<a href="%s">#%s</a>',
-                        [
-                            self::TWITTER_URI . '/search?q=' . urlencode($hashtag->text),
-                            htmlentities($hashtag->text)
-                        ]
+                        self::TWITTER_URI . '/search?q=' . urlencode($hashtag->text),
+                        htmlentities($hashtag->text)
                     )
                 );
             }
@@ -151,10 +149,8 @@ class TwitterExtension
                     $end,
                     sprintf(
                         '<a href="%s">%s</a>',
-                        [
-                            $url->url,
-                            htmlentities($url->display_url)
-                        ]
+                        $url->url,
+                        htmlentities($url->display_url)
                     )
                 );
             }
@@ -167,10 +163,8 @@ class TwitterExtension
                     $end,
                     sprintf(
                         '<a href="%s">@%s</a>',
-                        [
-                            self::TWITTER_URI . '/' . $mention->screen_name,
-                            htmlentities($mention->screen_name)
-                        ]
+                        self::TWITTER_URI . '/' . $mention->screen_name,
+                        htmlentities($mention->screen_name)
                     )
                 );
             }
@@ -183,10 +177,8 @@ class TwitterExtension
                     $end,
                     sprintf(
                         '<a href="%s">%s</a>',
-                        [
-                            $media->url,
-                            htmlentities($media->display_url)
-                        ]
+                        $media->url,
+                        htmlentities($media->display_url)
                     )
                 );
             }

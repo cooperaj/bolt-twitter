@@ -14,10 +14,16 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "kriswallsmith/buzz": "~0.3"
+        "kriswallsmith/buzz": "~0.10"
     },
     "autoload": {
-        "psr-0": { "Endroid": "src/" }
+        "psr-4": {
+            "Endroid\\Twitter\\": [ "src/" ],
+            "Endroid\\Twitter\\Tests\\": [ "tests/" ]
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
     },
     "extra": {
         "branch-alias": {
